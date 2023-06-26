@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Formularz</title>
-  <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 </head>
 <body>
-  <div>
-    <h1 id="pytanie"> Pytanie</h1>
-    <input type="text" placeholder="Wpisz coś...">
-    <button onclick="wyświetlTekst()">Wyślij</button>
-  </div>
-  <div>
-    <h1 id="pytanie">Pytanie</h1>
-    <input type="text" placeholder="Wpisz coś...">
-    <button onclick="wyświetlTekst()">Wyślij</button>
-  </div>
-  <script src="script.js"></script>
+    <div class="container">
+        <h1 id="question">Question Game</h1>
+        <input type="text" id="answerInput">
+        <button id="sendButton">Send</button>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
