@@ -54,7 +54,6 @@ function shuffleArray(array) {
   }
   return array;
 }
-// ...
 
 function next_question() {
   if (round <= 5) {
@@ -80,78 +79,37 @@ function next_question() {
       answerInput.value = "";
       answerInput.placeholder = "Wpisz swoją odpowiedź";
     }
-
-    if (question && round > 1) {
-      // Sprawdź istnienie dokumentu
-      answersRef.doc(playerName).get()
+    answersRef.doc(playerName).get()
         .then((doc) => {
           if (doc.exists) {
-            // Aktualizuj istniejący dokument
-            answersRef.doc(playerName).update({
-              answers: firebase.firestore.FieldValue.arrayUnion(answerArray[round - 2]), // Dodaj kolejną odpowiedź do tablicy
+            // Dokument istnieje - zaktualizuj odpowiedzi
+            const docRef = answersRef.doc(playerName);
+            docRef.update({
+              answers: firebase.firestore.FieldValue.arrayUnion(answerArray[round - 2]),
             })
             .then(() => {
-              console.log("Dane zaktualizowane w bazie danych Firestore");
-
-              // Odczytaj zaktualizowane dane
-              db.collection("answers").doc(playerName).get()
-                .then((doc) => {
-                  if (doc.exists) {
-                    const data = doc.data();
-                    console.log("Odczytane dane:", data);
-
-                    // Tutaj możesz przetwarzać odczytane dane
-
-                  } else {
-                    console.log("Dokument nie istnieje");
-                  }
-                })
-                .catch((error) => {
-                  console.error("Błąd podczas odczytu danych:", error);
-                });
+              console.log("Odpowiedź zapisana w bazie danych Firestore");
             })
             .catch((error) => {
-              console.error("Błąd podczas aktualizacji danych:", error);
+              console.error("Błąd podczas zapisu odpowiedzi:", error);
             });
           } else {
-            // Utwórz nowy dokument z początkową tablicą
+            // Dokument nie istnieje - utwórz nowy dokument z odpowiedziami
             answersRef.doc(playerName).set({
-              answers: [answerArray[round - 2]], // Utwórz nową tablicę z pierwszą odpowiedzią
+              answers: [answerArray[round - 2]],
             })
             .then(() => {
-              console.log("Nowy dokument utworzony w bazie danych Firestore");
-
-              // Odczytaj zapisane dane
-              db.collection("answers").doc(playerName).get()
-                .then((doc) => {
-                  if (doc.exists) {
-                    const data = doc.data();
-                    console.log("Odczytane dane:", data);
-
-                    // Tutaj możesz przetwarzać odczytane dane
-
-                  } else {
-                    console.log("Dokument nie istnieje");
-                  }
-                })
-                .catch((error) => {
-                  console.error("Błąd podczas odczytu danych:", error);
-                });
+              console.log("Dokument utworzony w bazie danych Firestore");
             })
             .catch((error) => {
-              console.error("Błąd podczas tworzenia nowego dokumentu:", error);
+              console.error("Błąd podczas tworzenia dokumentu:", error);
             });
           }
         })
         .catch((error) => {
-          console.error("Błąd podczas pobierania dokumentu:", error);
+          console.error("Błąd podczas sprawdzania dokumentu:", error);
         });
-    }
   }
 }
-
-// ...
-
-
 
 next_question();
