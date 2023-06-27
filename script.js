@@ -46,6 +46,7 @@ let round = 1;
 let shuffledQuestions = [...questions]; // Inicjalizacja tablicy przetasowanych pytań
 
 sendButton.addEventListener("click", next_question);
+sendButton.addEventListener("click", sendData);
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -79,37 +80,41 @@ function next_question() {
       answerInput.value = "";
       answerInput.placeholder = "Wpisz swoją odpowiedź";
     }
-    answersRef.doc(playerName).get()
-        .then((doc) => {
-          if (doc.exists) {
-            // Dokument istnieje - zaktualizuj odpowiedzi
-            const docRef = answersRef.doc(playerName);
-            docRef.update({
-              answers: firebase.firestore.FieldValue.arrayUnion(answerArray[round - 2]),
-            })
-            .then(() => {
-              console.log("Odpowiedź zapisana w bazie danych Firestore");
-            })
-            .catch((error) => {
-              console.error("Błąd podczas zapisu odpowiedzi:", error);
-            });
-          } else {
-            // Dokument nie istnieje - utwórz nowy dokument z odpowiedziami
-            answersRef.doc(playerName).set({
-              answers: [answerArray[round - 2]],
-            })
-            .then(() => {
-              console.log("Dokument utworzony w bazie danych Firestore");
-            })
-            .catch((error) => {
-              console.error("Błąd podczas tworzenia dokumentu:", error);
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Błąd podczas sprawdzania dokumentu:", error);
-        });
   }
 }
 
 next_question();
+
+function sendData() {
+  answersRef.doc(playerName).get()
+  .then((doc) => {
+    if (doc.exists) {
+      // Dokument istnieje - dodaj odpowiedzi
+      const docRef = answersRef.doc(playerName);
+      docRef.update({
+        answers: firebase.firestore.FieldValue.arrayUnion(...answerArray),
+      })
+      .then(() => {
+        console.log("Odpowiedzi zapisane w bazie danych Firestore");
+      })
+      .catch((error) => {
+        console.error("Błąd podczas zapisu odpowiedzi:", error);
+      });
+    }
+     else {
+      // Dokument nie istnieje - utwórz nowy dokument z odpowiedziami
+      answersRef.doc(playerName).set({
+        answers: [answerArray[round - 2]],
+      })
+      .then(() => {
+        console.log("Dokument utworzony w bazie danych Firestore");
+      })
+      .catch((error) => {
+        console.error("Błąd podczas tworzenia dokumentu:", error);
+      });
+    }
+  })
+  .catch((error) => {
+    console.error("Błąd podczas sprawdzania dokumentu:", error);
+  });
+}
