@@ -35,48 +35,50 @@ answersRef.get()
 
 
   const questions = ["Dlaczego?", "Co?", "Jak?", "Kto?", "Po co?", "Kiedy?", "Gdzie?"];
-  const answerArray = [];
-  let questionIndex = 0;
-  
-  const questionElement = document.getElementById("question");
-  const answerInput = document.getElementById("answerInput");
-  const sendButton = document.getElementById("sendButton");
-  let question = true;
-  let round = 1;
-  
-  sendButton.addEventListener("click", next_question);
-  
-  function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+const answerArray = [];
+let questionIndex = 0;
+
+const questionElement = document.getElementById("question");
+const answerInput = document.getElementById("answerInput");
+const sendButton = document.getElementById("sendButton");
+let question = true;
+let round = 1;
+let shuffledQuestions = [...questions]; // Inicjalizacja tablicy przetasowanych pytań
+
+sendButton.addEventListener("click", next_question);
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-  
-  const shuffledQuestions = shuffleArray([...questions]);
-  
-  function next_question() {
-    if (round <= 5) {
-      if (question) {
-        const answer = answerInput.value;
-        answerArray.push(answer);
-        answerInput.value = "";
-  
-        const currentQuestion = shuffledQuestions[questionIndex];
-        questionIndex++;
-        questionElement.textContent = round + ". " + currentQuestion;
-        question = false;
-        answerInput.placeholder = "Enter your answer";
-        round++;
-      } else {
-        question = true;
-        const answer = answerInput.value;
-        answerArray.push(answer);
-        answerInput.value = "";
-        answerInput.placeholder = "Enter your partner's answer";
-      }  
-  
+  return array;
+}
+
+function next_question() {
+  if (round <= 5) {
+    if (question) {
+      const answer = answerInput.value;
+      answerArray.push(answer);
+      answerInput.value = "";
+
+      if (round === 1) {
+        shuffledQuestions = shuffleArray([...questions]);
+      }
+
+      const currentQuestion = shuffledQuestions[questionIndex];
+      questionIndex++;
+      questionElement.textContent = round + ". " + currentQuestion;
+      question = false;
+      answerInput.placeholder = "Wpisz swoje pytanie";
+      round++;
+    } else {
+      question = true;
+      const answer = answerInput.value;
+      answerArray.push(answer);
+      answerInput.value = "";
+      answerInput.placeholder = "Wpisz swoją odpowiedź";
+    }
 
     if (round === 6) {
       // Zapisz answerArray w bazie danych Firestore
