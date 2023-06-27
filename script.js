@@ -54,6 +54,7 @@ function shuffleArray(array) {
   }
   return array;
 }
+// ...
 
 function next_question() {
   if (round <= 5) {
@@ -80,35 +81,77 @@ function next_question() {
       answerInput.placeholder = "Wpisz swoją odpowiedź";
     }
 
-    if (round === 6) {
-      // Zapisz answerArray w bazie danych Firestore
-      answersRef.doc(playerName).set({
-        answers: answerArray,
-      })
-      .then(() => {
-        console.log("Dane zapisane w bazie danych Firestore");
-    
-        // Odczytaj zapisane dane
-        db.collection("answers").doc(playerName).get()
-          .then((doc) => {
-            if (doc.exists) {
-              const data = doc.data();
-              console.log("Odczytane dane:", data);              
-    
-              
-            } else {
-              console.log("Dokument nie istnieje");
-            }
-          })
-          .catch((error) => {
-            console.error("Błąd podczas odczytu danych:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Błąd podczas zapisywania danych:", error);
-      });
-    }
+    if (question && round > 1) {
+      // Sprawdź istnienie dokumentu
+      answersRef.doc(playerName).get()
+        .then((doc) => {
+          if (doc.exists) {
+            // Aktualizuj istniejący dokument
+            answersRef.doc(playerName).update({
+              answers: firebase.firestore.FieldValue.arrayUnion(answerArray[round - 2]), // Dodaj kolejną odpowiedź do tablicy
+            })
+            .then(() => {
+              console.log("Dane zaktualizowane w bazie danych Firestore");
+
+              // Odczytaj zaktualizowane dane
+              db.collection("answers").doc(playerName).get()
+                .then((doc) => {
+                  if (doc.exists) {
+                    const data = doc.data();
+                    console.log("Odczytane dane:", data);
+
+                    // Tutaj możesz przetwarzać odczytane dane
+
+                  } else {
+                    console.log("Dokument nie istnieje");
+                  }
+                })
+                .catch((error) => {
+                  console.error("Błąd podczas odczytu danych:", error);
+                });
+            })
+            .catch((error) => {
+              console.error("Błąd podczas aktualizacji danych:", error);
+            });
+          } else {
+            // Utwórz nowy dokument z początkową tablicą
+            answersRef.doc(playerName).set({
+              answers: [answerArray[round - 2]], // Utwórz nową tablicę z pierwszą odpowiedzią
+            })
+            .then(() => {
+              console.log("Nowy dokument utworzony w bazie danych Firestore");
+
+              // Odczytaj zapisane dane
+              db.collection("answers").doc(playerName).get()
+                .then((doc) => {
+                  if (doc.exists) {
+                    const data = doc.data();
+                    console.log("Odczytane dane:", data);
+
+                    // Tutaj możesz przetwarzać odczytane dane
+
+                  } else {
+                    console.log("Dokument nie istnieje");
+                  }
+                })
+                .catch((error) => {
+                  console.error("Błąd podczas odczytu danych:", error);
+                });
+            })
+            .catch((error) => {
+              console.error("Błąd podczas tworzenia nowego dokumentu:", error);
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Błąd podczas pobierania dokumentu:", error);
+        });
     }
   }
+}
+
+// ...
+
+
 
 next_question();
