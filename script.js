@@ -46,9 +46,28 @@ answersRef.get()
       shuffledQuestions = shuffleArray([...questions]);
       addShuffledQuestionsToFirestore();
     }
+
+
     else {
-      console.error("Id higher than one")
+      const questionsRef = db.collection("Questions").doc("Questions");
+
+       questionsRef.get()
+         .then((doc) => {
+           if (doc.exists) {
+             const data = doc.data();
+             shuffledQuestions = data.shuffledQuestions;
+             console.log("Pobrano tablicę shuffledQuestions:", shuffledQuestions);
+            // Możesz tutaj wykorzystać pobraną tablicę shuffledQuestions do dalszej obróbki
+         } else {
+        console.log("Dokument Questions nie istnieje");
+            }
+          })
+          .catch((error) => {
+            console.error("Błąd podczas pobierania tablicy shuffledQuestions:", error);
+          });
     }
+
+
     playerName = "player"+(highestPlayerId + 1);
   })
   .catch((error) => {
@@ -133,38 +152,27 @@ sendButton.addEventListener("click", () => {
 
 
 
-function sendData() {
-  if (round <= 5){
-  answersRef.doc(playerName).get()
-  .then((doc) => {
-    if (doc.exists) {
-      // Dokument istnieje - dodaj odpowiedzi
-      const docRef = answersRef.doc(playerName);
-      docRef.update({
-        answers: firebase.firestore.FieldValue.arrayUnion(...answerArray),
-      })
-      .then(() => {
-        console.log("Odpowiedzi zapisane w bazie danych Firestore");
-      })
-      .catch((error) => {
-        console.error("Błąd podczas zapisu odpowiedzi:", error);
-      });
+  function sendData() {
+    if (round <= 5) {
+      // Usuwanie dokumentu o nazwie playerName
+      answersRef.doc(playerName).delete()
+        .then(() => {
+          console.log("Dokument pytań usunięty z bazy danych Firestore");
+          // Tworzenie nowego dokumentu o nazwie playerName i dodawanie tablicy answerArray
+          answersRef.doc(playerName).set({
+            answers: answerArray,
+          })
+            .then(() => {
+              console.log("Dokument pytań utworzony i odpowiedzi dodane w bazie danych Firestore");
+            })
+            .catch((error) => {
+              console.error("Błąd podczas tworzenia dokumentu:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Błąd podczas usuwania dokumentu:", error);
+        });
     }
-     else {
-      // Dokument nie istnieje - utwórz nowy dokument z odpowiedziami
-      answersRef.doc(playerName).set({
-        answers: [answerArray[round - 2]],
-      })
-      .then(() => {
-        console.log("Dokument utworzony w bazie danych Firestore");
-      })
-      .catch((error) => {
-        console.error("Błąd podczas tworzenia dokumentu:", error);
-      });
-    }
-  })
-  .catch((error) => {
-    console.error("Błąd podczas sprawdzania dokumentu:", error);
-  });
   }
-}
+  
+  
