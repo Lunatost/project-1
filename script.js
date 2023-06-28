@@ -13,6 +13,22 @@ const db = firebase.firestore();
 var answersRef = db.collection("answers");
 let playerName = "player1";
 
+let round = 1;
+const questions = ["Dlaczego?", "Co?", "Jak?", "Kto?", "Po co?", "Kiedy?", "Gdzie?", "Z kim?", "Kogo?"];
+let shuffledQuestions = [...questions]; // Inicjalizacja tablicy przetasowanych pytań
+const answerArray = [];
+let questionIndex = 0;
+
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+  }
+
+
 answersRef.get()
   .then((querySnapshot) => {
     let highestPlayerId = 0;   
@@ -25,67 +41,100 @@ answersRef.get()
         playerName = doc.id;
       }
     });
+    // generowanie pytań
+    if (highestPlayerId === 0 && round == 1) {
+      shuffledQuestions = shuffleArray([...questions]);
+      addShuffledQuestionsToFirestore();
+    }
+    else {
+      console.error("Id higher than one")
+    }
     playerName = "player"+(highestPlayerId + 1);
-
   })
   .catch((error) => {
     console.error("Błąd podczas pobierania dokumentów:", error);
   });
 
 
-
-  const questions = ["Dlaczego?", "Co?", "Jak?", "Kto?", "Po co?", "Kiedy?", "Gdzie?"];
-const answerArray = [];
-let questionIndex = 0;
-
+  function addShuffledQuestionsToFirestore() {
+    const questionsRef = db.collection("Questions");
+  
+    // Krok 1: Usuń istniejący dokument "Questions", jeśli istnieje
+    questionsRef.doc("Questions").delete()
+      .then(() => {
+        console.log("Dokument 'Questions' usunięty z bazy danych Firestore");
+  
+        // Krok 2: Utwórz nowy dokument "Questions"
+        questionsRef.doc("Questions").set({})
+          .then(() => {
+            console.log("Dokument 'Questions' utworzony w bazie danych Firestore");
+  
+            // Krok 3: Dodaj tablicę "shuffledQuestions" do dokumentu "Questions"
+            questionsRef.doc("Questions").update({
+              shuffledQuestions: shuffledQuestions,
+            })
+            .then(() => {
+              console.log("Tablica 'shuffledQuestions' dodana do dokumentu 'Questions'");
+            })
+            .catch((error) => {
+              console.error("Błąd podczas dodawania tablicy 'shuffledQuestions':", error);
+            });
+          })
+          .catch((error) => {
+            console.error("Błąd podczas tworzenia dokumentu 'Questions':", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Błąd podczas usuwania dokumentu 'Questions':", error);
+      });
+  }
+  
 const questionElement = document.getElementById("question");
 const answerInput = document.getElementById("answerInput");
 const sendButton = document.getElementById("sendButton");
+const noAnswersElement = document.getElementById("noAnswers");
 let question = true;
-let round = 1;
-let shuffledQuestions = [...questions]; // Inicjalizacja tablicy przetasowanych pytań
 
-sendButton.addEventListener("click", next_question);
-sendButton.addEventListener("click", sendData);
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+sendButton.addEventListener("click", () => {
+  if (answerInput.value != "") {
+    noAnswersElement.textContent = ""
+    next_question();
+    sendData();
   }
-  return array;
-}
+  else
+  {
+    noAnswersElement.textContent = "Nie możesz zostawić pola bez odpowiedzi!"
+  }
+});
 
-function next_question() {
-  if (round <= 5) {
-    if (question) {
-      const answer = answerInput.value;
-      answerArray.push(answer);
-      answerInput.value = "";
 
-      if (round === 1) {
-        shuffledQuestions = shuffleArray([...questions]);
+  function next_question() {
+    if (round <= 5) {
+      if (question) {
+        const answer = answerInput.value;
+        answerArray.push(answer);
+        answerInput.value = "";
+  
+        const currentQuestion = shuffledQuestions[questionIndex];
+        questionIndex++;
+        questionElement.textContent = round + ". " + currentQuestion;
+        question = false;
+        answerInput.placeholder = "Wpisz swoje pytanie";
+        round++;
+      } else {
+        question = true;
+        const answer = answerInput.value;
+        answerArray.push(answer);
+        answerInput.value = "";
+        answerInput.placeholder = "Wpisz swoją odpowiedź";
       }
-
-      const currentQuestion = shuffledQuestions[questionIndex];
-      questionIndex++;
-      questionElement.textContent = round + ". " + currentQuestion;
-      question = false;
-      answerInput.placeholder = "Wpisz swoje pytanie";
-      round++;
-    } else {
-      question = true;
-      const answer = answerInput.value;
-      answerArray.push(answer);
-      answerInput.value = "";
-      answerInput.placeholder = "Wpisz swoją odpowiedź";
     }
-  }
-}
+  }  
 
-next_question();
+
 
 function sendData() {
+  if (round <= 5){
   answersRef.doc(playerName).get()
   .then((doc) => {
     if (doc.exists) {
@@ -117,4 +166,5 @@ function sendData() {
   .catch((error) => {
     console.error("Błąd podczas sprawdzania dokumentu:", error);
   });
+  }
 }
