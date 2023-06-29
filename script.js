@@ -14,6 +14,7 @@ var answersRef = db.collection("answers");
 let playerName = "player1";
 
 let round = 1;
+let realround = 1;
 const questions = ["Dlaczego?", "Co?", "Jak?", "Kto?", "Po co?", "Kiedy?", "Gdzie?", "Z kim?", "Kogo?"];
 let shuffledQuestions = [...questions]; // Inicjalizacja tablicy przetasowanych pytań
 const answerArray = [];
@@ -128,7 +129,7 @@ sendButton.addEventListener("click", () => {
 
 
   function next_question() {
-    if (round <= 5) {
+    if (realround <= 12) {
       if (question) {
         const answer = answerInput.value;
         answerArray.push(answer);
@@ -138,10 +139,12 @@ sendButton.addEventListener("click", () => {
         questionIndex++;
         questionElement.textContent = round + ". " + currentQuestion;
         question = false;
-        answerInput.placeholder = "Wpisz swoje pytanie";
         round++;
+        realround++;
+        answerInput.placeholder = "Wpisz swoje pytanie";
       } else {
         question = true;
+        realround++;
         const answer = answerInput.value;
         answerArray.push(answer);
         answerInput.value = "";
@@ -153,7 +156,8 @@ sendButton.addEventListener("click", () => {
 
 
   function sendData() {
-    if (round <= 5) {
+    // 5 rund ( (ilość rund * 2)+2 )
+    if (realround <= 12) {
       // Usuwanie dokumentu o nazwie playerName
       answersRef.doc(playerName).delete()
         .then(() => {

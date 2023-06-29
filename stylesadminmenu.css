@@ -1,0 +1,45 @@
+.container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .player-input, .turns-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .checkboxes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .checkbox {
+    display: flex;
+    align-items: center;
+    margin: 1px;
+  }
+  
+  #start-button {
+    font-size: 20px;
+    padding: 10px 20px;
+    font-weight: bold;
+    background-color: rgb(7, 184, 7);
+    color: rgb(28, 27, 109);
+    border: 2px solid rgb(13, 156, 20);
+  }
+  
+  .player-input label,
+  .turns-input label {
+    margin-right: 5px;
+  }
+  
+  .player-input input[type="text"],
+  .turns-input input[type="text"] {
+    width: 15px;
+  }
+  
