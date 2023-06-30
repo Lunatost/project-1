@@ -3,7 +3,7 @@
     padding: 20px;
   }
   
-  .player-input, .turns-input {
+  .player-input{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -33,13 +33,16 @@
     border: 2px solid rgb(13, 156, 20);
   }
   
-  .player-input label,
-  .turns-input label {
+  .player-input label{
     margin-right: 5px;
   }
   
-  .player-input input[type="text"],
-  .turns-input input[type="text"] {
+  .player-input input[type="text"]{
     width: 15px;
   }
   
+  #not-enought-questions {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+  }

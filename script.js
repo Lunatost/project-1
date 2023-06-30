@@ -15,99 +15,11 @@ let playerName = "player1";
 
 let round = 1;
 let realround = 1;
-const questions = ["Dlaczego?", "Co?", "Jak?", "Kto?", "Po co?", "Kiedy?", "Gdzie?", "Z kim?", "Kogo?"];
-let shuffledQuestions = [...questions]; // Inicjalizacja tablicy przetasowanych pytań
 const answerArray = [];
 let questionIndex = 0;
 
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-  }
 
-
-answersRef.get()
-  .then((querySnapshot) => {
-    let highestPlayerId = 0;   
-
-    querySnapshot.forEach((doc) => {
-      const playerId = parseInt(doc.id.substring(6));
-      
-      if (playerId > highestPlayerId) {
-        highestPlayerId = playerId;
-        playerName = doc.id;
-      }
-    });
-    // generowanie pytań
-    if (highestPlayerId === 0 && round == 1) {
-      shuffledQuestions = shuffleArray([...questions]);
-      addShuffledQuestionsToFirestore();
-    }
-
-
-    else {
-      const questionsRef = db.collection("Questions").doc("Questions");
-
-       questionsRef.get()
-         .then((doc) => {
-           if (doc.exists) {
-             const data = doc.data();
-             shuffledQuestions = data.shuffledQuestions;
-             console.log("Pobrano tablicę shuffledQuestions:", shuffledQuestions);
-            // Możesz tutaj wykorzystać pobraną tablicę shuffledQuestions do dalszej obróbki
-         } else {
-        console.log("Dokument Questions nie istnieje");
-            }
-          })
-          .catch((error) => {
-            console.error("Błąd podczas pobierania tablicy shuffledQuestions:", error);
-          });
-    }
-
-
-    playerName = "player"+(highestPlayerId + 1);
-  })
-  .catch((error) => {
-    console.error("Błąd podczas pobierania dokumentów:", error);
-  });
-
-
-  function addShuffledQuestionsToFirestore() {
-    const questionsRef = db.collection("Questions");
-  
-    // Krok 1: Usuń istniejący dokument "Questions", jeśli istnieje
-    questionsRef.doc("Questions").delete()
-      .then(() => {
-        console.log("Dokument 'Questions' usunięty z bazy danych Firestore");
-  
-        // Krok 2: Utwórz nowy dokument "Questions"
-        questionsRef.doc("Questions").set({})
-          .then(() => {
-            console.log("Dokument 'Questions' utworzony w bazie danych Firestore");
-  
-            // Krok 3: Dodaj tablicę "shuffledQuestions" do dokumentu "Questions"
-            questionsRef.doc("Questions").update({
-              shuffledQuestions: shuffledQuestions,
-            })
-            .then(() => {
-              console.log("Tablica 'shuffledQuestions' dodana do dokumentu 'Questions'");
-            })
-            .catch((error) => {
-              console.error("Błąd podczas dodawania tablicy 'shuffledQuestions':", error);
-            });
-          })
-          .catch((error) => {
-            console.error("Błąd podczas tworzenia dokumentu 'Questions':", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Błąd podczas usuwania dokumentu 'Questions':", error);
-      });
-  }
   
 const questionElement = document.getElementById("question");
 const answerInput = document.getElementById("answerInput");
@@ -115,7 +27,6 @@ const noAnswersElement = document.getElementById("noAnswers");
 let question = true;
 
 
-// script.js
 function sendButton() {
   console.log('sendbutton');
     if (answerInput.value != "") {
@@ -129,29 +40,9 @@ function sendButton() {
     }
 }
 
-function startbutton() {
-  console.log('startbutton');
-
-  const checkboxes = [];
-
-  for (let i = 1; i <= 9; i++) {
-    const checkbox = document.getElementById(`checkbox${i}`);
-    checkboxes.push(checkbox.checked);
-  }
-
-    // Przykład użycia:
-      console.log(checkboxes);
+if (window.location.href.includes('main.html')) {
+  document.getElementById('sendButton').addEventListener('click', sendButton);
 }
-
-
-
-if (window.location.href.includes('AdminMenu.html')) {
-  document.getElementById('start-button').addEventListener('click', startbutton);
-}
-
-
-document.getElementById('sendButton').addEventListener('click', sendButton);
-
 
 
 
