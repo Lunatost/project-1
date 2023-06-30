@@ -112,10 +112,18 @@ answersRef.get()
 const questionElement = document.getElementById("question");
 const answerInput = document.getElementById("answerInput");
 const sendButton = document.getElementById("sendButton");
+const startButton = document.getElementById("start-button");
 const noAnswersElement = document.getElementById("noAnswers");
 let question = true;
 
+
+startButton.addEventListener("click", () => {
+  console.log("startbutton");
+ });
+
+
 sendButton.addEventListener("click", () => {
+  console.log("sendbutton");
   if (answerInput.value != "") {
     noAnswersElement.textContent = ""
     next_question();
@@ -126,6 +134,9 @@ sendButton.addEventListener("click", () => {
     noAnswersElement.textContent = "Nie możesz zostawić pola bez odpowiedzi!"
   }
 });
+
+
+
 
 
   function next_question() {
