@@ -111,29 +111,48 @@ answersRef.get()
   
 const questionElement = document.getElementById("question");
 const answerInput = document.getElementById("answerInput");
-const sendButton = document.getElementById("sendButton");
-const startButton = document.getElementById("start-button");
 const noAnswersElement = document.getElementById("noAnswers");
 let question = true;
 
 
-startButton.addEventListener("click", () => {
-  console.log("startbutton");
- });
+// script.js
+function sendButton() {
+  console.log('sendbutton');
+    if (answerInput.value != "") {
+      noAnswersElement.textContent = ""
+      next_question();
+      sendData();
+    }
+    else
+    {
+      noAnswersElement.textContent = "Nie możesz zostawić pola bez odpowiedzi!"
+    }
+}
+
+function startbutton() {
+  console.log('startbutton');
+
+  const checkboxes = [];
+
+  for (let i = 1; i <= 9; i++) {
+    const checkbox = document.getElementById(`checkbox${i}`);
+    checkboxes.push(checkbox.checked);
+  }
+
+    // Przykład użycia:
+      console.log(checkboxes);
+}
 
 
-sendButton.addEventListener("click", () => {
-  console.log("sendbutton");
-  if (answerInput.value != "") {
-    noAnswersElement.textContent = ""
-    next_question();
-    sendData();
-  }
-  else
-  {
-    noAnswersElement.textContent = "Nie możesz zostawić pola bez odpowiedzi!"
-  }
-});
+
+if (window.location.href.includes('AdminMenu.html')) {
+  document.getElementById('start-button').addEventListener('click', startbutton);
+}
+
+
+document.getElementById('sendButton').addEventListener('click', sendButton);
+
+
 
 
 
