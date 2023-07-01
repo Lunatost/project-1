@@ -15,6 +15,7 @@ let playerName = "player1";
 const questions = ["Dlaczego?", "Co?", "Jak?", "Kto?", "Po co?", "Kiedy?", "Gdzie?", "Z kim?", "Kogo?"];
 let lessQuestions = [...questions]; // Inicjalizacja tablicy przetasowanych pytań
 shuffledQuestions = [];
+addShuffledQuestionsToFirestore();
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -24,27 +25,11 @@ function shuffleArray(array) {
     return array;
     }
   
-    const checkboxes = [];
-
-    const NotEnoughtQuestions = document.getElementById("not-enought-questions");
-
+const checkboxes = [];
+const NotEnoughtQuestions = document.getElementById("not-enought-questions");
+NotEnoughtQuestions.textContent = ""
   
-  answersRef.get()
-    .then((querySnapshot) => {
-      let highestPlayerId = 0; 
-      NotEnoughtQuestions.textContent = ""
-  
-      querySnapshot.forEach((doc) => {
-        const playerId = parseInt(doc.id.substring(6));
-        
-        if (playerId > highestPlayerId) {
-          highestPlayerId = playerId;
-          playerName = doc.id;
-        }
-      });
       // generowanie pytań
-      if (highestPlayerId === 0) {
-  
         const startbutton = () => {
         
           checkboxes.length = 0;
@@ -79,35 +64,7 @@ function shuffleArray(array) {
         if (window.location.href.includes('AdminMenu.html')) {
           document.getElementById('start-button').addEventListener('click', startbutton);
         }
-      }
-  
-  
-      else {
-        const questionsRef = db.collection("Questions").doc("Questions");
-  
-         questionsRef.get()
-           .then((doc) => {
-             if (doc.exists) {
-               const data = doc.data();
-               shuffledQuestions = data.shuffledQuestions;
-               console.log("Pobrano tablicę shuffledQuestions:", shuffledQuestions);
-              // Możesz tutaj wykorzystać pobraną tablicę shuffledQuestions do dalszej obróbki
-           } else {
-          console.log("Dokument Questions nie istnieje");
-              }
-            })
-            .catch((error) => {
-              console.error("Błąd podczas pobierania tablicy shuffledQuestions:", error);
-            });
-      }
-  
-  
-      playerName = "player"+(highestPlayerId + 1);
-    })
-    .catch((error) => {
-      console.error("Błąd podczas pobierania dokumentów:", error);
-    });
-  
+        
   
     function addShuffledQuestionsToFirestore() {
       const questionsRef = db.collection("Questions");
@@ -128,6 +85,9 @@ function shuffleArray(array) {
               })
               .then(() => {
                 console.log("Tablica 'shuffledQuestions' dodana do dokumentu 'Questions'");
+                if(shuffledQuestions.length > 1) {
+                window.location.href = 'http://127.0.0.1:5500/main.html';
+                }
               })
               .catch((error) => {
                 console.error("Błąd podczas dodawania tablicy 'shuffledQuestions':", error);

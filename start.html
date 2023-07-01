@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Czekaj na rozpoczęcie rozgrywki!</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f1f1f1;
+    }
+    
+    .animated-text {
+        font-family: 'Caveat', cursive;
+        font-size: 36px;
+        color: #333;
+        font-weight: bold;
+        color: rgb(28, 27, 109);
+        background-color: rgba(110, 173, 113, 0.26);
+        border: 2px solid rgba(93, 133, 95, 0.096);
+        position: relative;
+       animation: myAnim 3s ease 0.5s infinite normal forwards;
+    }
+    
+    @keyframes myAnim {
+      0%,
+      100% {
+        transform: translateX(0%);
+        transform-origin: 50% 50%;
+      }
+
+      15% {
+        transform: translateX(-30px) rotate(-6deg);
+      }
+
+      30% {
+        transform: translateX(15px) rotate(6deg);
+      }
+
+      45% {
+        transform: translateX(-15px) rotate(-3.6deg);
+      }
+
+      60% {
+        transform: translateX(9px) rotate(2.4deg);
+      }
+
+      75% {
+        transform: translateX(-6px) rotate(-1.2deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="animated-text">Czekaj na rozpoczęcie rozgrywki</div>
+
+  <script src="start.js"></script>
+</body>
+</html>
