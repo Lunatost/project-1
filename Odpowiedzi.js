@@ -64,7 +64,7 @@ nasButton.addEventListener('click', function() {
   num++;
   if(arr.length == num){
     
-    window.location.href = 'http://127.0.0.1:5500/end.html';
+    window.location.href = 'https://lunatost.github.io/project-1/end.html';
   }
   else {
     answerDisplay();
