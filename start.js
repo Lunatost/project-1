@@ -23,7 +23,7 @@ pagesRef.get()
 
       // Wykonaj odpowiednie działania w zależności od wartości boolValue
       if (boolValue !== true) {
-        window.location.href = 'https://lunatost.github.io/project-1/ingame.html';
+        window.location.href = 'http://127.0.0.1:5500/ingame.html';
       }
     } else {
       console.log("Dokument 'admin' nie istnieje.");
@@ -71,7 +71,7 @@ PlayersRef.doc("players").get().then((doc) => {
 
 function nextpage(){
     if(playerID == 1 ){
-        window.location.href = 'https://lunatost.github.io/project-1/AdminMenu.html';
+        window.location.href = 'http://127.0.0.1:5500/AdminMenu.html';
     }
 }
 
@@ -84,7 +84,7 @@ setInterval(() => {
       const shuffledQuestions = data.shuffledQuestions;
 
       if (shuffledQuestions && shuffledQuestions.length > 0) {
-        window.location.href = 'https://lunatost.github.io/project-1/main.html';
+        window.location.href = 'http://127.0.0.1:5500/main.html';
       }
     } else {
       console.log("Dokument 'Questions' nie istnieje.");

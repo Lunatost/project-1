@@ -9,8 +9,46 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-
 const answersRef = db.collection("answers");
+const pagesInGaRef = db.collection("pages").doc("ingame");
+const pagesAdmRef = db.collection("pages").doc("admin");
+const pagesOdpRef = db.collection("pages").doc("odpow");
+const PlayersRef = db.collection("Players").doc("players");
+
+pagesOdpRef.get()
+  .then((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      const boolValue = data[0];
+
+      console.log("Aktualna wartość zmiennej bool:", boolValue);
+
+      // Wykonaj odpowiednie działania w zależności od wartości boolValue
+      if (boolValue !== true) {
+        window.location.href = 'http://127.0.0.1:5500/start.html';
+      }
+    } else {
+      console.log("Dokument 'admin' nie istnieje.");
+    }
+  })
+  .catch((error) => {
+    console.error("Błąd podczas pobierania dokumentu 'admin':", error);
+  });
+
+
+  setTimeout(function() {
+    pagesOdpRef.update({
+      0: false
+    })
+    .then(() => {
+      console.log("Wartość zmiennej bool została zmieniona na false.");
+    })
+    .catch((error) => {
+      console.error("Błąd podczas aktualizacji wartości zmiennej bool:", error);
+    });
+  }, 5000);
+
+
 const arr = [];
 let num = 0;
 const arrm = [];
@@ -63,8 +101,7 @@ nasButton.addEventListener('click', function() {
   if(arr.length>num){
   num++;
   if(arr.length == num){
-    
-    window.location.href = 'https://lunatost.github.io/project-1/end.html';
+    GameEnd();
   }
   else {
     answerDisplay();
@@ -107,4 +144,66 @@ function answerDisplay() {
     textarea.addEventListener("input", function() {
       array = textarea.value.split("\n"); // Podział wartości na podstawie znaku nowej linii i aktualizacja tablicy
     });
+}
+
+
+
+
+
+
+function GameEnd() {
+  answersRef.get()
+    .then((snapshot) => {
+      // Tworzenie tablicy z zadaniami usunięcia dokumentów
+      const deletePromises = [];
+      snapshot.forEach((doc) => {
+        // Usunięcie dokumentu
+        deletePromises.push(doc.ref.delete());
+      });
+
+      // Wykonanie wszystkich zadań usunięcia
+      return Promise.all(deletePromises);
+    })
+    .then(() => {
+      // Usunięcie samej kolekcji
+      return answersRef.parent.doc(answersRef.id).delete();
+    })
+    .then(() => {
+      console.log("Kolekcja 'answers' została pomyślnie usunięta.");
+    })
+    .catch((error) => {
+      console.error("Błąd podczas usuwania kolekcji 'answers':", error);
+    });
+
+  pagesInGaRef.update({
+    0: true
+  })
+  .then(() => {
+    console.log("Wartość zmiennej InGame została zmieniona na true.");
+  })
+  .catch((error) => {
+    console.error("Błąd podczas aktualizacji wartości zmiennej InGame:", error);
+  });
+
+  PlayersRef.update({
+    players: 0
+  })
+  .then(() => {
+    console.log("Wartość zmiennej players została zmieniona na 0.");
+  })
+  .catch((error) => {
+    console.error("Błąd podczas aktualizacji wartości zmiennej players:", error);
+  });
+
+  pagesAdmRef.update({
+    0: true
+  })
+  .then(() => {
+    console.log("Wartość zmiennej Admin została zmieniona na true.");
+  })
+  .catch((error) => {
+    console.error("Błąd podczas aktualizacji wartości zmiennej Admin:", error);
+  });
+
+  window.location.href = 'http://127.0.0.1:5500/end.html';
 }

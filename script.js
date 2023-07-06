@@ -15,6 +15,7 @@ const db = firebase.firestore();
 var answersRef = db.collection("answers");
 
 const pagesRef = db.collection("pages").doc("ingame");
+const pagesOdpRef = db.collection("pages").doc("odpow");
 
 pagesRef.get()
   .then((doc) => {
@@ -26,7 +27,7 @@ pagesRef.get()
 
       // Wykonaj odpowiednie działania w zależności od wartości boolValue
       if (boolValue !== true) {
-        window.location.href = 'https://lunatost.github.io/project-1/start.html';
+        window.location.href = 'http://127.0.0.1:5500/start.html';
       }
     } else {
       console.log("Dokument 'admin' nie istnieje.");
@@ -60,21 +61,6 @@ let questionIndex = 0;
 
 let ID = false;
 
-const PlayersRef = db.collection("Players");
-PlayersRef.doc("players").get().then((doc) => {
-  if (doc.exists) {
-    PlayersRef.doc("players").delete()
-      .then(() => {
-        console.log("Dokument players usunięty z bazy danych Firestore");
-        // Tworzenie nowego dokumentu players i dodawanie pola players z wartością playerID
-        PlayersRef.doc("players").set({
-          players: 2  //2 = in game
-        })
-    })
-  } 
-}).catch((error) => {
-  console.log("Błąd podczas pobierania dokumentu players: ", error);
-});
 
 
   
@@ -210,7 +196,7 @@ ID = true
         console.log(answersCount);
 
         if (playersCount === answersCount) {
-          window.location.href = 'https://lunatost.github.io/project-1/odpowiedzi.html';
+          MoveToOdpowiedzi();
         }
       })
       .catch((error) => {
@@ -220,3 +206,20 @@ ID = true
         setTimeout(checkAnswers, 1000); // Ponowne wywołanie po sekundzie
       });
   }
+
+
+function MoveToOdpowiedzi() {
+
+  // Ustaw wartość zmiennej bool na false
+  pagesOdpRef.update({
+    0: true
+  })
+  .then(() => {
+    console.log("Wartość zmiennej bool została zmieniona na false.");
+    })
+  .catch((error) => {
+    console.error("Błąd podczas aktualizacji wartości zmiennej bool:", error);
+  });
+
+  window.location.href = 'http://127.0.0.1:5500/odpowiedzi.html';
+}
