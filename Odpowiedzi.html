@@ -2,6 +2,8 @@
 <html>
 <head>
   <title>Odpowiedzi</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -27,16 +29,36 @@
 
     .text-area label {
       display: block;
-      margin-bottom: 5px;
     }
 
     .text-area textarea {
       width: 100%;
-      height: 200px; /* Zwiększenie wysokości pola tekstowego */
+      min-height: 360px; /* Ustawienie minimalnej wysokości pola tekstowego */
       resize: none;
       border: none;
       text-align: center;
       font-size: 16px;
+      overflow: normal; /* Dodanie paska przewijania, gdy tekst przekracza wysokość pola */
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1px;
+    }
+
+    .button {
+      width: 150px;
+      height: 40px;
+      font-weight: bold;
+      background-color: rgb(7, 184, 7);
+      color: rgb(28, 27, 109);
+      border: 2px solid rgb(13, 156, 20);
+      cursor: pointer;
+    }
+
+    .button + .button {
+      margin-left: 64px; /* Dodany margines między przyciskami */
     }
   </style>
 </head>
@@ -48,6 +70,13 @@
       <textarea id="text"></textarea>
     </div>
 
+    <div class="button-container">
+      <button class="button" id="pop-button">Poprzednia odpowiedź</button>
+      <button class="button" id="nas-button">Następna odpowiedź</button>
+    </div>
+
+    
     <script src="Odpowiedzi.js"></script>
 </body>
 </html>
+

@@ -9,6 +9,47 @@ const firebaseConfig = {
   
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const pagesRef = db.collection("pages").doc("admin");
+let isSafeToExit = false;
+
+
+pagesRef.get()
+  .then((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      const boolValue = data[0];
+
+      console.log("Aktualna wartość zmiennej bool:", boolValue);
+
+      // Wykonaj odpowiednie działania w zależności od wartości boolValue
+      if (boolValue === true) {
+        block();
+      } else {
+       window.location.href = 'http://127.0.0.1:5500/start.html';
+      }
+    } else {
+      console.log("Dokument 'admin' nie istnieje.");
+    }
+  })
+  .catch((error) => {
+    console.error("Błąd podczas pobierania dokumentu 'admin':", error);
+  });
+
+
+// blokowanie strony admin
+function block() {
+  // Ustaw wartość zmiennej bool na false
+  pagesRef.update({
+    0: false
+  })
+  .then(() => {
+    console.log("Wartość zmiennej bool została zmieniona na false.");
+  })
+  .catch((error) => {
+    console.error("Błąd podczas aktualizacji wartości zmiennej bool:", error);
+  });
+}
+
 var answersRef = db.collection("answers");
 let playerName = "player1";
 
@@ -54,6 +95,7 @@ NotEnoughtQuestions.textContent = ""
             NotEnoughtQuestions.textContent = ""
             shuffledQuestions = shuffleArray([...lessQuestions]);
             console.log(shuffledQuestions);
+
             addShuffledQuestionsToFirestore();
           }
           else {
@@ -86,7 +128,8 @@ NotEnoughtQuestions.textContent = ""
               .then(() => {
                 console.log("Tablica 'shuffledQuestions' dodana do dokumentu 'Questions'");
                 if(shuffledQuestions.length > 1) {
-                window.location.href = 'http://127.0.0.1:5500/main.html';
+                  isSafeToExit = true;
+                  window.location.href = 'http://127.0.0.1:5500/main.html';
                 }
               })
               .catch((error) => {
@@ -101,3 +144,28 @@ NotEnoughtQuestions.textContent = ""
           console.error("Błąd podczas usuwania dokumentu 'Questions':", error);
         });
     }
+
+
+    window.addEventListener("beforeunload", function(event) {
+      if (!isSafeToExit) {
+      // Ustaw wartość zmiennej bool na false
+      pagesRef.update({
+        0: true
+      })
+      .then(() => {
+        console.log("Wartość zmiennej bool została zmieniona na false.");
+      })
+      .catch((error) => {
+        console.error("Błąd podczas aktualizacji wartości zmiennej bool:", error);
+      });
+    
+      // Anuluj domyślne zachowanie okna przed opuszczeniem strony
+      event.preventDefault();
+      // Przypisz tekst do pola event.returnValue, aby wyświetlić komunikat potwierdzający
+      event.returnValue = "Czy na pewno chcesz opuścić stronę?";
+    
+      // Możesz również zastosować zwrócenie niestandardowego komunikatu, na przykład:
+      // event.returnValue = "Opuszczając stronę, zmiany zostaną zapisane.";
+      }
+    });
+    
