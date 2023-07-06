@@ -10,6 +10,30 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const PlayersRef = db.collection("Players");
+
+const pagesRef = db.collection("pages").doc("ingame");
+
+pagesRef.get()
+  .then((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      const boolValue = data[0];
+
+      console.log("Aktualna wartość zmiennej bool:", boolValue);
+
+      // Wykonaj odpowiednie działania w zależności od wartości boolValue
+      if (boolValue !== true) {
+        window.location.href = 'https://lunatost.github.io/project-1/ingame.html';
+      }
+    } else {
+      console.log("Dokument 'admin' nie istnieje.");
+    }
+  })
+  .catch((error) => {
+    console.error("Błąd podczas pobierania dokumentu 'admin':", error);
+  });
+
+
 let highestID = 0;
 let playerID = 1;
 
@@ -47,7 +71,7 @@ PlayersRef.doc("players").get().then((doc) => {
 
 function nextpage(){
     if(playerID == 1 ){
-        window.location.href = 'http://127.0.0.1:5500/AdminMenu.html';
+        window.location.href = 'https://lunatost.github.io/project-1/AdminMenu.html';
     }
 }
 
@@ -60,8 +84,7 @@ setInterval(() => {
       const shuffledQuestions = data.shuffledQuestions;
 
       if (shuffledQuestions && shuffledQuestions.length > 0) {
-        console.log("Tablica 'shuffledQuestions' zawiera elementy.");
-        window.location.href = 'http://127.0.0.1:5500/main.html';
+        window.location.href = 'https://lunatost.github.io/project-1/main.html';
       }
     } else {
       console.log("Dokument 'Questions' nie istnieje.");

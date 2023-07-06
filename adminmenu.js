@@ -25,7 +25,7 @@ pagesRef.get()
       if (boolValue === true) {
         block();
       } else {
-       window.location.href = 'http://127.0.0.1:5500/start.html';
+       window.location.href = 'https://lunatost.github.io/project-1/start.html';
       }
     } else {
       console.log("Dokument 'admin' nie istnieje.");
@@ -129,7 +129,7 @@ NotEnoughtQuestions.textContent = ""
                 console.log("Tablica 'shuffledQuestions' dodana do dokumentu 'Questions'");
                 if(shuffledQuestions.length > 1) {
                   isSafeToExit = true;
-                  window.location.href = 'http://127.0.0.1:5500/main.html';
+                  window.location.href = 'https://lunatost.github.io/project-1/main.html';
                 }
               })
               .catch((error) => {
