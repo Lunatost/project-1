@@ -10,6 +10,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const pagesRef = db.collection("pages").doc("admin");
+const PlayerNumRef = db.collection("Players").doc("players");
 let isSafeToExit = false;
 
 
@@ -25,7 +26,7 @@ pagesRef.get()
       if (boolValue === true) {
         block();
       } else {
-       window.location.href = 'http://127.0.0.1:5500/start.html';
+       window.location.href = 'https://lunatost.github.io/project-1/start.html';
       }
     } else {
       console.log("Dokument 'admin' nie istnieje.");
@@ -129,7 +130,7 @@ NotEnoughtQuestions.textContent = ""
                 console.log("Tablica 'shuffledQuestions' dodana do dokumentu 'Questions'");
                 if(shuffledQuestions.length > 1) {
                   isSafeToExit = true;
-                  window.location.href = 'http://127.0.0.1:5500/main.html';
+                  window.location.href = 'https://lunatost.github.io/project-1/main.html';
                 }
               })
               .catch((error) => {
@@ -151,6 +152,18 @@ NotEnoughtQuestions.textContent = ""
       // Ustaw wartość zmiennej bool na false
       pagesRef.update({
         0: true
+      })
+      .then(() => {
+        console.log("Wartość zmiennej bool została zmieniona na false.");
+      })
+      .catch((error) => {
+        console.error("Błąd podczas aktualizacji wartości zmiennej bool:", error);
+      });
+
+        
+      // Ustaw wartość zmiennej players na players --
+      PlayerNumRef.update({
+        players: firebase.firestore.FieldValue.increment(-1)
       })
       .then(() => {
         console.log("Wartość zmiennej bool została zmieniona na false.");

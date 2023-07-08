@@ -9,11 +9,12 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const answersRef = db.collection("answers");
 const pagesInGaRef = db.collection("pages").doc("ingame");
 const pagesAdmRef = db.collection("pages").doc("admin");
 const pagesOdpRef = db.collection("pages").doc("odpow");
 const PlayersRef = db.collection("Players").doc("players");
+const EndRef = db.collection("pages").doc("end");
+
 
 pagesOdpRef.get()
   .then((doc) => {
@@ -25,7 +26,7 @@ pagesOdpRef.get()
 
       // Wykonaj odpowiednie działania w zależności od wartości boolValue
       if (boolValue !== true) {
-        window.location.href = 'http://127.0.0.1:5500/start.html';
+        window.location.href = 'https://lunatost.github.io/project-1/ingame.html';
       }
     } else {
       console.log("Dokument 'admin' nie istnieje.");
@@ -49,11 +50,22 @@ pagesOdpRef.get()
   }, 5000);
 
 
+EndRef.update({
+  x: true
+})
+.then(() => {
+  console.log("Wartość zmiennej end została zmieniona na true.");
+})
+.catch((error) => {
+  console.error("Błąd podczas aktualizacji wartości zmiennej end:", error);
+});
+
+
 const arr = [];
 let num = 0;
 const arrm = [];
 
-
+const answersRef = db.collection("answers");
 
 answersRef.get()
   .then((snapshot) => {
@@ -146,64 +158,81 @@ function answerDisplay() {
     });
 }
 
-
-
-
-
-
 function GameEnd() {
-  answersRef.get()
+  const End2Ref = db.collection("pages").doc("end");
+  End2Ref.get()
+  .then((doc) => {
+    const value = doc.data().x;
+    if (value === true) {
+      Game2End();
+    } else {
+      window.location.href = 'https://lunatost.github.io/project-1/end.html';
+    }
+  })
+  .catch((error) => {
+    console.error("Błąd podczas pobierania wartości z End2Ref:", error);
+  });
+}
+
+
+
+
+function Game2End() {
+  const collectionRef = firebase.firestore().collection("answers");
+
+  collectionRef.get()
     .then((snapshot) => {
-      // Tworzenie tablicy z zadaniami usunięcia dokumentów
       const deletePromises = [];
       snapshot.forEach((doc) => {
-        // Usunięcie dokumentu
         deletePromises.push(doc.ref.delete());
       });
-
-      // Wykonanie wszystkich zadań usunięcia
       return Promise.all(deletePromises);
     })
     .then(() => {
-      // Usunięcie samej kolekcji
-      return answersRef.parent.doc(answersRef.id).delete();
-    })
-    .then(() => {
-      console.log("Kolekcja 'answers' została pomyślnie usunięta.");
+      console.log("Kolekcja została pomyślnie usunięta.");
+
+      pagesInGaRef.update({
+        0: true
+      })
+        .then(() => {
+          console.log("Wartość zmiennej InGame została zmieniona na true.");
+        })
+        .catch((error) => {
+          console.error("Błąd podczas aktualizacji wartości zmiennej InGame:", error);
+        });
+
+      PlayersRef.update({
+        players: 0
+      })
+        .then(() => {
+          console.log("Wartość zmiennej players została zmieniona na 0.");
+        })
+        .catch((error) => {
+          console.error("Błąd podczas aktualizacji wartości zmiennej players:", error);
+        });
+
+      pagesAdmRef.update({
+        0: true
+      })
+        .then(() => {
+          console.log("Wartość zmiennej Admin została zmieniona na true.");
+        })
+        .catch((error) => {
+          console.error("Błąd podczas aktualizacji wartości zmiennej Admin:", error);
+        });
+
+      EndRef.update({
+        x: false
+      })
+        .then(() => {
+          console.log("Wartość zmiennej end została zmieniona na false.");
+          window.location.href = 'https://lunatost.github.io/project-1/end.html';
+        })
+        .catch((error) => {
+          console.error("Błąd podczas aktualizacji wartości zmiennej end:", error);
+        });
     })
     .catch((error) => {
-      console.error("Błąd podczas usuwania kolekcji 'answers':", error);
+      console.error("Błąd podczas usuwania kolekcji:", error);
     });
-
-  pagesInGaRef.update({
-    0: true
-  })
-  .then(() => {
-    console.log("Wartość zmiennej InGame została zmieniona na true.");
-  })
-  .catch((error) => {
-    console.error("Błąd podczas aktualizacji wartości zmiennej InGame:", error);
-  });
-
-  PlayersRef.update({
-    players: 0
-  })
-  .then(() => {
-    console.log("Wartość zmiennej players została zmieniona na 0.");
-  })
-  .catch((error) => {
-    console.error("Błąd podczas aktualizacji wartości zmiennej players:", error);
-  });
-
-  pagesAdmRef.update({
-    0: true
-  })
-  .then(() => {
-    console.log("Wartość zmiennej Admin została zmieniona na true.");
-  })
-  .catch((error) => {
-    console.error("Błąd podczas aktualizacji wartości zmiennej Admin:", error);
-  });
-
-  window.location.href = 'http://127.0.0.1:5500/end.html';
 }

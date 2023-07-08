@@ -9,7 +9,9 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+let isSafeToExit = false;
 const PlayersRef = db.collection("Players");
+const PlayerNumRef = db.collection("Players").doc("players");
 
 const pagesRef = db.collection("pages").doc("ingame");
 
@@ -23,7 +25,8 @@ pagesRef.get()
 
       // Wykonaj odpowiednie działania w zależności od wartości boolValue
       if (boolValue !== true) {
-        window.location.href = 'http://127.0.0.1:5500/ingame.html';
+        isSafeToExit = true;
+        window.location.href = 'https://lunatost.github.io/project-1/ingame.html';
       }
     } else {
       console.log("Dokument 'admin' nie istnieje.");
@@ -71,7 +74,8 @@ PlayersRef.doc("players").get().then((doc) => {
 
 function nextpage(){
     if(playerID == 1 ){
-        window.location.href = 'http://127.0.0.1:5500/AdminMenu.html';
+      isSafeToExit = true;
+      window.location.href = 'https://lunatost.github.io/project-1/AdminMenu.html';
     }
 }
 
@@ -84,7 +88,8 @@ setInterval(() => {
       const shuffledQuestions = data.shuffledQuestions;
 
       if (shuffledQuestions && shuffledQuestions.length > 0) {
-        window.location.href = 'http://127.0.0.1:5500/main.html';
+        isSafeToExit = true;
+        window.location.href = 'https://lunatost.github.io/project-1/main.html';
       }
     } else {
       console.log("Dokument 'Questions' nie istnieje.");
@@ -94,3 +99,23 @@ setInterval(() => {
   });
 }, 1000); // Sprawdzaj co 1 sekund (możesz dostosować ten interwał)
 
+
+window.addEventListener("beforeunload", function(event) {
+  console.log(isSafeToExit)
+  if (!isSafeToExit) {
+  
+  // Ustaw wartość zmiennej players na players --
+  PlayerNumRef.update({
+    players: firebase.firestore.FieldValue.increment(-1)
+  })
+  .then(() => {
+    console.log("Wartość zmiennej bool została zmieniona na false.");
+  })
+  .catch((error) => {
+    console.error("Błąd podczas aktualizacji wartości zmiennej bool:", error);
+  });
+
+  // Anuluj domyślne zachowanie okna przed opuszczeniem strony
+  event.preventDefault();
+  }
+});

@@ -27,7 +27,7 @@ pagesRef.get()
 
       // Wykonaj odpowiednie działania w zależności od wartości boolValue
       if (boolValue !== true) {
-        window.location.href = 'http://127.0.0.1:5500/start.html';
+        window.location.href = 'https://lunatost.github.io/project-1/start.html';
       }
     } else {
       console.log("Dokument 'admin' nie istnieje.");
@@ -61,7 +61,8 @@ let questionIndex = 0;
 
 let ID = false;
 
-
+document.getElementById("answerInput").classList.remove("hidden");
+document.getElementById("sendButton").classList.remove("hidden");
 
   
 const questionElement = document.getElementById("question");
@@ -161,6 +162,9 @@ ID = true
 
   function sendData() {
     if(realround == (shuffledQuestions.length + 1)*2){
+      questionElement.textContent = "Czekaj aż inni odpowiedzą!";
+      document.getElementById("answerInput").classList.add("hidden");
+      document.getElementById("sendButton").classList.add("hidden");
     // Usuwanie dokumentu o nazwie playerName
     answersRef.doc(playerName).delete()
       .then(() => {
@@ -221,5 +225,5 @@ function MoveToOdpowiedzi() {
     console.error("Błąd podczas aktualizacji wartości zmiennej bool:", error);
   });
 
-  window.location.href = 'http://127.0.0.1:5500/odpowiedzi.html';
+  window.location.href = 'https://lunatost.github.io/project-1/odpowiedzi.html';
 }
