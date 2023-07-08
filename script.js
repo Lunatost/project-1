@@ -225,5 +225,5 @@ function MoveToOdpowiedzi() {
     console.error("Błąd podczas aktualizacji wartości zmiennej bool:", error);
   });
 
-  window.location.href = 'https://lunatost.github.io/project-1/odpowiedzi.html';
+  window.location.href = 'https://lunatost.github.io/project-1/Odpowiedzi.html';
 }
